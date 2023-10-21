@@ -1,15 +1,18 @@
-#!/usr/bin/env node
-
 import { launch } from 'puppeteer';
 import fs from 'fs';
 import cron from 'node-cron';
 
+const filePath = '/Users/rishabgupta/Documents/7 Bays spider/gym_occupancy_data.csv';
+
 // Run the script every 1 minute
 cron.schedule('*/30 * * * *', () => {
-  console.log('Running the cron...');
-  if (shouldScriptRun()) {
-    console.log('Running the script...');
-    scrapeGymOccupancy();
+  try {
+    if (shouldScriptRun()) {
+      console.log('Running the script...');
+      scrapeGymOccupancy();
+    }
+  } catch (error) {
+    console.error('An error occurred when running the cron job', error.message);
   }
 });
 
@@ -69,8 +72,6 @@ async function scrapeGymOccupancy() {
 
     const dataToWrite = `${formattedDate},${occupancyData}\n`;
 
-    const filePath = '/Users/rishabgupta/Documents/7 Bays spider/gym_occupancy_data.csv';
-
     // Check if the CSV file exists
     if (!fs.existsSync(filePath)) {
       // If not, create it and add the headers
@@ -78,9 +79,9 @@ async function scrapeGymOccupancy() {
     }
 
     // Append the data to the CSV file
-    fs.appendFileSync('gym_occupancy_data.csv', dataToWrite);
+    fs.appendFileSync(filePath, dataToWrite);
   } catch (error) {
-    console.error('An error occurred:', error.message);
+    console.error('An error occurred in the scrape script', error.message);
   } finally {
     if (browser) {
       await browser.close();
