@@ -1,5 +1,17 @@
+#!/usr/bin/env node
+
 import { launch } from 'puppeteer';
 import fs from 'fs';
+import cron from 'node-cron';
+
+// Run the script every 1 minute
+cron.schedule('*/30 * * * *', () => {
+  console.log('Running the cron...');
+  if (shouldScriptRun()) {
+    console.log('Running the script...');
+    scrapeGymOccupancy();
+  }
+});
 
 function shouldScriptRun(currentDate = new Date()) {
   //   const currentDate = new Date();
@@ -24,7 +36,7 @@ function shouldScriptRun(currentDate = new Date()) {
 async function scrapeGymOccupancy() {
   let browser;
   try {
-    browser = await launch({ headless: false });
+    browser = await launch({ headless: true });
     const page = await browser.newPage();
 
     // Navigate directly to the iframe link
@@ -57,10 +69,12 @@ async function scrapeGymOccupancy() {
 
     const dataToWrite = `${formattedDate},${occupancyData}\n`;
 
+    const filePath = '/Users/rishabgupta/Documents/7 Bays spider/gym_occupancy_data.csv';
+
     // Check if the CSV file exists
-    if (!fs.existsSync('gym_occupancy_data.csv')) {
+    if (!fs.existsSync(filePath)) {
       // If not, create it and add the headers
-      fs.writeFileSync('gym_occupancy_data.csv', 'Date and Time (UTC),Gym Occupancy\n');
+      fs.writeFileSync(filePath, 'Date and Time (UTC),Gym Occupancy\n');
     }
 
     // Append the data to the CSV file
@@ -73,5 +87,3 @@ async function scrapeGymOccupancy() {
     }
   }
 }
-
-scrapeGymOccupancy();
