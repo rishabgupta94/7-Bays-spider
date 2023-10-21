@@ -40,7 +40,7 @@ function shouldScriptRun(currentDate = new Date()) {
 async function scrapeGymOccupancy() {
   let browser;
   try {
-    browser = await launch({ headless: true });
+    browser = await launch({ headless: 'new' });
     const page = await browser.newPage();
 
     // Navigate directly to the iframe link
