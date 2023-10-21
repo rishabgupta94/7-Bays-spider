@@ -6,6 +6,7 @@ const filePath = '/Users/rishabgupta/Documents/7 Bays spider/gym_occupancy_data.
 
 // Run the script every 1 minute
 cron.schedule('*/30 * * * *', () => {
+  console.log('Running the cron job');
   try {
     if (shouldScriptRun()) {
       console.log('Running the script...');
